@@ -134,6 +134,7 @@ libmagma_src += \
     $(cdir)/zgbtrf_batched_sliding_window_sm.cu  \
     $(cdir)/zgbtrs_kernels.cu  \
 	$(cdir)/zgeadd_batched.cu		\
+	$(cdir)/zgeadd_vbatched.cu		\
 	$(cdir)/zgemm_batched.cpp		\
 	$(cdir)/cgemm_batched_core.cu		\
 	$(cdir)/dgemm_batched_core.cu		\

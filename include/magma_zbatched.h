@@ -1057,6 +1057,14 @@ magmablas_zgeadd_batched(
     magma_int_t batchCount, magma_queue_t queue );
 
 void
+magmablas_zgeadd_vbatched(
+    magma_int_t* m, magma_int_t* n,
+    magmaDoubleComplex alpha,
+    magmaDoubleComplex const * const * dAarray, magma_int_t* ldda,
+    magmaDoubleComplex              **dBarray, magma_int_t* lddb,
+    magma_int_t batchCount, magma_queue_t queue );
+
+void
 magmablas_zlacpy_internal_batched(
     magma_uplo_t uplo, magma_int_t m, magma_int_t n,
     magmaDoubleComplex_const_ptr const dAarray[], magma_int_t Ai, magma_int_t Aj, magma_int_t ldda,
