@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.18 )
+cmake_minimum_required( VERSION 3.21 )
 
 # ----------------------------------------
 # to disable Fortran, set this to "off"
@@ -256,8 +256,7 @@ endif()
 # ----------------------------------------
 # locate HIP/ROCm libraries
 if (MAGMA_ENABLE_HIP)
-    set( GPU_TARGET "gfx900" CACHE STRING "HIP architectures to compile for" )
-    list(APPEND CMAKE_PREFIX_PATH /opt/rocm /opt/rocm/lib/cmake/hip)
+    enable_language( HIP )
     find_package( HIP )
     if (HIP_FOUND)
         message( STATUS "Found HIP ${HIP_VERSION}" )
@@ -318,18 +317,12 @@ if (MAGMA_ENABLE_HIP)
 
         set( DEVCCFLAGS  "" )
         set(VALID_GFXS "700;701;702;703;704;705;801;802;803;805;810;900;902;904;906;908;909;90c;1010;1011;1012;1030;1031;1032;1033")
-        foreach( GFX ${VALID_GFXS} )
-            if ( GPU_TARGET MATCHES gfx${GFX} )
-                set( DEVCCFLAGS ${DEVCCFLAGS} --offload-arch=gfx${GFX} )
-            endif()
-        endforeach()
 
         set( DEVCCFLAGS ${DEVCCFLAGS} -fPIC ${FORTRAN_CONVENTION} )
         set(MAGMA_HAVE_HIP "1")
         message( STATUS "Define -DMAGMA_HAVE_HIP" )
 
         set_property(TARGET hip::device APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL INTERFACE_HIP_DEVICE_COMPILE)
-        set_property(TARGET hip::device PROPERTY INTERFACE_HIP_DEVICE_COMPILE ON)
         set(GPU_ARCH_FLAGS ${DEVCCFLAGS})
 
         #add_compile_options(${GPU_ARCH_FLAGS})
@@ -508,7 +501,13 @@ else()
         if (hipSPARSE_FOUND)
             message( STATUS "Found rocSPARSE ${rocSPARSE_VERSION}" )
         endif()
+        foreach( filename ${libmagma_all} )
+            if (filename MATCHES "\\.hip.cpp$")
+                set_source_files_properties(${filename} PROPERTIES LANGUAGE HIP)
+            endif()
+        endforeach()
         add_library( magma ${libmagma_all} )
+        set_target_properties( magma PROPERTIES LINKER_LANGUAGE CXX )
         target_link_libraries( magma
             hip::host
             ${LAPACK_LIBRARIES}
@@ -592,11 +591,16 @@ if (MAGMA_ENABLE_CUDA)
         magma_nvcc_flags
     )
 else()
+    foreach( filename ${libsparse_all} )
+        if (filename MATCHES "\\.hip.cpp$")
+            set_source_files_properties(${filename} PROPERTIES LANGUAGE HIP)
+        endif()
+    endforeach()
     add_library( magma_sparse ${libsparse_all} )
+    set_target_properties( magma_sparse PROPERTIES LINKER_LANGUAGE CXX )
     target_link_libraries( magma_sparse
         magma
         ${LAPACK_LIBRARIES}
-        hip::device
         roc::hipblas
         roc::hipsparse
     )
