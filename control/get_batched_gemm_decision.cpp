@@ -109,6 +109,19 @@ magma_int_t magma_srecommend_cublas_gemm_batched(
             magma_trans_t transa, magma_trans_t transb,
             magma_int_t m, magma_int_t n, magma_int_t k)
 {
+#ifdef MAGMA_HAVE_HIP
+    // On AMD GPUs (e.g. MI300A), hipBLAS's batched gemm is consistently at
+    // least as fast as MAGMA's own batched kernel, so always prefer it
+    // rather than relying on the heuristic below, which was tuned on NVIDIA
+    // hardware.
+    MAGMA_UNUSED( transa );
+    MAGMA_UNUSED( transb );
+    MAGMA_UNUSED( m );
+    MAGMA_UNUSED( n );
+    MAGMA_UNUSED( k );
+    return 1;
+#else
+
     magma_int_t use_cublas_gemm_batched = 0;
     magma_int_t shape = magma_get_gemm_shape(transa, transb);
 
@@ -225,6 +238,7 @@ magma_int_t magma_srecommend_cublas_gemm_batched(
         default:;
     }
     return use_cublas_gemm_batched;
+#endif // MAGMA_HAVE_HIP
 }
 
 
@@ -234,6 +248,19 @@ magma_int_t magma_drecommend_cublas_gemm_batched(
             magma_trans_t transa, magma_trans_t transb,
             magma_int_t m, magma_int_t n, magma_int_t k)
 {
+#ifdef MAGMA_HAVE_HIP
+    // On AMD GPUs (e.g. MI300A), hipBLAS's batched gemm is consistently at
+    // least as fast as MAGMA's own batched kernel, so always prefer it
+    // rather than relying on the heuristic below, which was tuned on NVIDIA
+    // hardware.
+    MAGMA_UNUSED( transa );
+    MAGMA_UNUSED( transb );
+    MAGMA_UNUSED( m );
+    MAGMA_UNUSED( n );
+    MAGMA_UNUSED( k );
+    return 1;
+#else
+
     magma_int_t use_cublas_gemm_batched = 0;
     magma_int_t shape = magma_get_gemm_shape(transa, transb);
 
@@ -334,6 +361,7 @@ magma_int_t magma_drecommend_cublas_gemm_batched(
         default:;
     }
     return use_cublas_gemm_batched;
+#endif // MAGMA_HAVE_HIP
 }
 
 
@@ -343,6 +371,19 @@ magma_int_t magma_crecommend_cublas_gemm_batched(
             magma_trans_t transa, magma_trans_t transb,
             magma_int_t m, magma_int_t n, magma_int_t k)
 {
+#ifdef MAGMA_HAVE_HIP
+    // On AMD GPUs (e.g. MI300A), hipBLAS's batched gemm is consistently at
+    // least as fast as MAGMA's own batched kernel, so always prefer it
+    // rather than relying on the heuristic below, which was tuned on NVIDIA
+    // hardware.
+    MAGMA_UNUSED( transa );
+    MAGMA_UNUSED( transb );
+    MAGMA_UNUSED( m );
+    MAGMA_UNUSED( n );
+    MAGMA_UNUSED( k );
+    return 1;
+#else
+
     magma_int_t use_cublas_gemm_batched = 0;
     magma_int_t shape = magma_get_gemm_shape(transa, transb);
 
@@ -458,6 +499,7 @@ magma_int_t magma_crecommend_cublas_gemm_batched(
         default:;
     }
     return use_cublas_gemm_batched;
+#endif // MAGMA_HAVE_HIP
 }
 
 
@@ -467,6 +509,19 @@ magma_int_t magma_zrecommend_cublas_gemm_batched(
             magma_trans_t transa, magma_trans_t transb,
             magma_int_t m, magma_int_t n, magma_int_t k)
 {
+#ifdef MAGMA_HAVE_HIP
+    // On AMD GPUs (e.g. MI300A), hipBLAS's batched gemm is consistently at
+    // least as fast as MAGMA's own batched kernel, so always prefer it
+    // rather than relying on the heuristic below, which was tuned on NVIDIA
+    // hardware.
+    MAGMA_UNUSED( transa );
+    MAGMA_UNUSED( transb );
+    MAGMA_UNUSED( m );
+    MAGMA_UNUSED( n );
+    MAGMA_UNUSED( k );
+    return 1;
+#else
+
     magma_int_t use_cublas_gemm_batched = 0;
     magma_int_t shape = magma_get_gemm_shape(transa, transb);
 
@@ -567,6 +622,7 @@ magma_int_t magma_zrecommend_cublas_gemm_batched(
         default:;
     }
     return use_cublas_gemm_batched;
+#endif // MAGMA_HAVE_HIP
 }
 
 
