@@ -93,6 +93,25 @@ endif()
 find_package( OpenMP )
 if (OPENMP_FOUND)
     message( STATUS "Found OpenMP" )
+
+    # On Clang (e.g. ROCm's clang++, used to compile/link HIP sources),
+    # FindOpenMP normally selects Clang's own "-fopenmp=libomp" runtime.
+    # On systems where the rest of the toolchain (BLAS/LAPACK, other
+    # libraries) was built against GNU's libgomp, ending up with both
+    # OpenMP runtimes in the same executable can cause link or runtime
+    # errors. Set MAGMA_OPENMP_RUNTIME to override which runtime Clang
+    # targets, e.g. -DMAGMA_OPENMP_RUNTIME=libgomp.
+    set( MAGMA_OPENMP_RUNTIME "" CACHE STRING
+         "Override the OpenMP runtime Clang links against (e.g. libgomp, libomp); leave empty for the default detected by FindOpenMP" )
+    if (MAGMA_OPENMP_RUNTIME)
+        if (CMAKE_C_COMPILER_ID MATCHES "Clang" AND OpenMP_C_FLAGS MATCHES "-fopenmp=")
+            string( REGEX REPLACE "-fopenmp=[A-Za-z0-9_]+" "-fopenmp=${MAGMA_OPENMP_RUNTIME}" OpenMP_C_FLAGS "${OpenMP_C_FLAGS}" )
+        endif()
+        if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND OpenMP_CXX_FLAGS MATCHES "-fopenmp=")
+            string( REGEX REPLACE "-fopenmp=[A-Za-z0-9_]+" "-fopenmp=${MAGMA_OPENMP_RUNTIME}" OpenMP_CXX_FLAGS "${OpenMP_CXX_FLAGS}" )
+        endif()
+    endif()
+
     message( STATUS "    OpenMP_C_FLAGS   ${OpenMP_C_FLAGS}" )
     message( STATUS "    OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS}" )
     set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
